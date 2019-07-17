@@ -4,22 +4,20 @@ pygame.init()
 size = (700, 500)
 screen = pygame.display.set_mode(size)
 
-time.sleep(60)
-
-BLACK = (255, 255, 255)
-WHITE = (0,0,0)
+BLACK = (0, 0, 0)
+WHITE = (255,255,255)
 
 pygame.display.set_caption("harpoon")
 pygame.font.SysFont('Calibri', 25, True, BLACK)
 
 done = False
-exit_button == False
+exit_button = False
 
 #main loop
 while not done:
     #start page
     screen.fill(WHITE)
-    pygame.draw.rect(screen, BLACK, [250, 55, 200, 90]) #the coordinates I think is [x,y,width,height]
+    pygame.draw.rect(screen, BLACK, [250, 55, 200, 90]) #the coordinates is [x,y,width,height]
     pygame.draw.rect(screen, BLACK, [250, 155, 200, 90])
     pygame.draw.rect(screen, BLACK, [250, 255, 200, 90])
     pygame.draw.rect(screen, BLACK, [250, 355, 200, 90])
@@ -32,8 +30,9 @@ while not done:
     screen.blit(text2,[255, 160])
     screen.blit(text3,[255, 260])
     screen.blit(text4,[255, 360])
+    pygame.display.flip()
     for event in pygame.event.get():
-        if event.type == event.QUIT or exit_button == True:
+        if event.type == pygame.QUIT or exit_button == True:
             done = True 
     #continuous 
         elif ((pygame.mouse.get_pos()[0] > 250) and (pygame.mouse.get_pos()[0] <450)) and ((pygame.mouse.get_pos()[1] > 55) and (pygame.mouse.get_pos()[1] < 145)):
