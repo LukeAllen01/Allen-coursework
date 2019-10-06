@@ -3,6 +3,7 @@ pygame.init()
 
 size = (700, 500)
 screen = pygame.display.set_mode(size)
+clock = pygame.time.Clock()
 
 BLACK = (0,0,0)
 WHITE = (255,255,255)
@@ -16,21 +17,22 @@ YELLOW = (255,224,32)   #I got these colours from a picture online
 
 pygame.display.set_caption("harpoon")
 pygame.font.SysFont('Calibri', 25, True, BLACK)
-font1 = pygame.font.SysFont('Calibri', 30, True, False)
-font2 = pygame.font.SysFont('Calibri', 20, True, False)
-
-Text_Continuous1 = font1.render("CONTINUOUS", True, BLACK)
-Text_Continuous2 = font2.render("CONTINUOUS", True, BLACK)
-Text_Levels1 = font1.render("LEVELS", True, BLACK)
-Text_Levels2 = font2.render("LEVELS", True, BLACK)
-Text_Level_Builder1 = font1.render("LEVEL BUILDER", True, BLACK)
-Text_Level_Builder2 = font2.render("LEVEL BUILDER", True, BLACK)
-Text_Options1 = font1.render("OPTIONS", True, BLACK)
-Text_Options2 = font2.render("OPTIONS", True, BLACK)
-Text_Harpoon_Game = font1.render("HARPOON GAME", True, BLACK)
-Text_Level_Name = font2.render("Level Name:", True, BLACK)
-Text_Level_Creator = font2.render("Level Creator:", True, BLACK)
+font1 = pygame.font.SysFont('Calibri', 30, True, False) 
+font2 = pygame.font.SysFont('Calibri', 20, True, False) 
+ 
+Text_Continuous1 = font1.render("CONTINUOUS", True, BLACK) 
+Text_Continuous2 = font2.render("CONTINUOUS", True, BLACK) 
+Text_Levels1 = font1.render("LEVELS", True, BLACK) 
+Text_Levels2 = font2.render("LEVELS", True, BLACK) 
+Text_Level_Builder1 = font1.render("LEVEL BUILDER", True, BLACK) 
+Text_Level_Builder2 = font2.render("LEVEL BUILDER", True, BLACK) 
+Text_Options1 = font1.render("OPTIONS", True, BLACK) 
+Text_Options2 = font2.render("OPTIONS", True, BLACK) 
+Text_Harpoon_Game = font1.render("HARPOON GAME", True, BLACK) 
+Text_Level_Name = font2.render("Level Name:", True, BLACK) 
+Text_Level_Creator = font2.render("Level Creator:", True, BLACK) 
 Text_Gravity = font2.render("Gravity:", True, BLACK)
+Text_SFX = font2.render("SFX",True, BLACK)
 
 #original settings
 KLC = RED    #ONLC stand for 'killer line colour'
@@ -42,47 +44,104 @@ exit_button = False
 ChangeColourClose = False
 
 class Button:
-    def __init__(self, coords, size, fontsize, word):
-        self.coords = coords
-        self.rect = pygame.Rect(coords, size)
+    def __init__(self, x, y, width, height, fontsize, word, fill, nextpage):
         font = pygame.font.SysFont('Calibri', fontsize, True, False)
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
         self.word = font.render(word, True, BLACK)
+        self.fill = fill
+        self.outline_colour = BLACK
+        self.clicked = False
+        self.nextpage = nextpage
+        global page
     def draw(self):
-        pygame.draw.rect(self.rect)
-        screen.blit(self.word, [self.coords[0] + 10, self.coords[1] + 10], 4)
+        pygame.draw.rect(screen, self.fill, [self.x,self.y,self.width,self.height])
+        pygame.draw.rect(screen, self.outline_colour, [self.x, self.y, self.width, self.height], 4)
+        screen.blit(self.word, [self.x + 10, self.y + 10])
     def click(self):
-        pass
-class OptionsButton(Button):
-    def __init__(self):
-        Button.__init__(self, [10,10], [10,10])
-    def press(self):
-        OptionsPage()
+        if ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > self.x) and (pygame.mouse.get_pos()[0] <(self.x + self.width))) and ((pygame.mouse.get_pos()[1] > self.y) and (pygame.mouse.get_pos()[1] < (self.y + self.height)) and self.nextpage != ""):
+            page.append(self.nextpage)
 
-def NextPage(CurrentPage):
+###############################################################             GENERAL                 ######################################################################################
+
+page = ["ST"]
+
+SP_Harpoon_game = Button(232,-10,0,0,35,"Harpoon Game",WHITE, "")
+SP_Continuous = Button( 250, 55, 200, 90,22, "Continuous", WHITE, "CO")
+SP_Levels = Button(250,155,200,90,22,"Levels",WHITE, "LV")
+SP_Level_builder = Button(250,255,200,90,22, "Level Builder", WHITE,"LB")
+SP_Options = Button(250,355,200,90,22, "Options", WHITE, "OP")
+def StartPage():
+    screen.fill(WHITE)
+    #SP means start page
+    SP_Harpoon_game.draw()
+    SP_Continuous.draw()
+    SP_Levels.draw()
+    SP_Level_builder.draw()
+    SP_Options.draw()
+    pygame.display.flip()
+    
+BACK = Button(595,445,100,50,20,"BACK",WHITE,"BACK")
+gravity = False
+###############################################################             END OF GENERAL          ######################################################################################
+###############################################################             CONTINUOUS              ######################################################################################
+def ContinuousPage():
+    screen.fill(WHITE)
+    
+def ContinuousGame():
     pass
+###############################################################             END OF CONTINUOUS       ######################################################################################
+###############################################################             LEVELS                  ######################################################################################
+def LevelsPage():
+    pass
+###############################################################             END OF LEVELS           ######################################################################################
+###############################################################             LEVEL BUILDER           ######################################################################################
+Level_Name = Button(200,40,200,20,11,"",WHITE,"")
+Level_Creator = Button(200,70,200,20,11,"",WHITE,"")
+Level_Gravity = Button(200,100,100,50,11,"",WHITE,"")
+def LevelBuilderStartPage():
+    screen.fill(WHITE)
+    screen.blit(Text_Level_Builder1, [10,10])
+    screen.blit(Text_Level_Name, [10, 40])
+    screen.blit(Text_Level_Creator, [10, 70])
+    Level_Name.draw()
+    Level_Creator.draw()
+    Level_Gravity.draw()
+    if gravity == True:
+        pygame.draw.rect(screen, GREEN, [200, 100, 50, 50])
+        pygame.draw.rect(screen, WHITE, [250, 100, 50, 50])
+        pygame.draw.rect(screen, BLACK, [200, 100, 100, 50], 4)
+    else:
+        pygame.draw.rect(screen, WHITE, [200, 100, 50, 50])
+        pygame.draw.rect(screen, GREY, [250, 100, 50, 50])
+        pygame.draw.rect(screen, BLACK, [200, 100, 100, 50], 4)
+    
+###############################################################             END OF LEVEL BUILDER    ######################################################################################
+###############################################################             OPTIONS                 ######################################################################################
+Killer_Line_Colour = Button(100,100,100,100,11,"", KLC, "CCKL")
+Bouncy_Line_Colour = Button(100,250,100,100,11,"", BLC, "CCBL") #unfinished
+SFX_Options_button = Button(100,400,100,50,11,"",WHITE,"OPSFX")
 def OptionsPage():
     screen.fill(WHITE)
     Text_Killer_Line_Colour = font2.render("Killer Line Colour", True, BLACK)
     Text_Bouncy_Line_Colour = font2.render("Bouncy Line Colour", True, BLACK)
-    fee = Button([10,10], [10,10], 11, "fee")
-    Button.draw(fee)
-    #screen.blit(Text_Killer_Line_Colour, [250, 125])
-    #screen.blit(Text_Bouncy_Line_Colour, [250, 275])
-    #screen.blit(Text_Options1, [300, 60])
-    #pygame.draw.rect(screen, KLC, [100, 100, 100, 100])           #the coordinates is [x,y,width,height], width (if 0 then fill)
-    #pygame.draw.rect(screen, BLACK, [100, 100, 100, 100], 4)
-    #pygame.draw.rect(screen, BLC, [100, 250, 100, 100])
-    #pygame.draw.rect(screen, BLACK, [100, 250, 100, 100], 4)
+    screen.blit(Text_Killer_Line_Colour, [250, 125])
+    screen.blit(Text_Bouncy_Line_Colour, [250, 275])
+    screen.blit(Text_Options1, [300, 60])
+    screen.blit(Text_SFX, [250, 400])
+    Killer_Line_Colour.draw()
+    Bouncy_Line_Colour.draw()
+    SFX_Options_button.draw()
     if SFX == True:
         pygame.draw.rect(screen, GREEN, [100, 400, 50, 50])
         pygame.draw.rect(screen, WHITE, [150, 400, 50, 50])
-        pygame.draw.rect(screen, BLACK, [100, 400, 100, 50], 4)
     else:
         pygame.draw.rect(screen, WHITE, [100, 400, 50, 50])
         pygame.draw.rect(screen, GREY, [150, 400, 50, 50])
-        pygame.draw.rect(screen, BLACK, [100, 400, 100, 50], 4)
-    pygame.display.flip()
-    clock.tick(20)
+    BACK.draw()
+
 def ChangeColourBoxRim(x):
     if x == KLC:
         rim = GREEN
@@ -90,100 +149,83 @@ def ChangeColourBoxRim(x):
         rim = RED
     else:
         rim = BLACK
-        return rim
-    
-def ChangeColour(x,y):              #(colour being changed, other colour)
-    while not ChangeColourClose:
-        screen.fill(WHITE)
-        pygame.draw.rect(screen, RED, [100, 100, 100, 100])
-        pygame.draw.rect(screen, ChangeColourBoxRim(RED), [100, 100, 100, 100], 4)
-        pygame.draw.rect(screen, BLUE, [300, 100, 100, 100])
-        pygame.draw.rect(screen, ChangeColourBoxRim(BLUE), [300, 100, 100, 100], 4)
-        pygame.draw.rect(screen, GREY, [500, 100, 100, 100])
-        pygame.draw.rect(screen, ChangeColourBoxRim(GREY), [500, 100, 100, 100], 4)
-        pygame.draw.rect(screen, PINK, [100, 300, 100, 100])
-        pygame.draw.rect(screen, ChangeColourBoxRim(PINK), [100, 300, 100, 100], 4)
-        pygame.draw.rect(screen, ORANGE, [300, 300, 100, 100])
-        pygame.draw.rect(screen, ChangeColourBoxRim(ORANGE), [300, 300, 100, 100], 4)
-        pygame.draw.rect(screen, YELLOW, [500, 300, 100, 100])
-        pygame.draw.rect(screen, ChangeColourBoxRim(YELLOW), [500, 300, 100, 100], 4)
-        pygame.screen.flip()
-        clock.tick(20)
-        for event in pygame.event.get():
-            if event.type == pygame.quit:
-                done = True
-            elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 100) and (pygame.mouse.get_pos()[0] <200)) and ((pygame.mouse.get_pos()[1] > 100) and (pygame.mouse.get_pos()[1] < 200)):
-                x = RED
-            elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 300) and (pygame.mouse.get_pos()[0] <400)) and ((pygame.mouse.get_pos()[1] > 100) and (pygame.mouse.get_pos()[1] < 200)):
-                x = BLUE
-            elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 500) and (pygame.mouse.get_pos()[0] <600)) and ((pygame.mouse.get_pos()[1] > 100) and (pygame.mouse.get_pos()[1] < 200)):
-                x = GREY
-            elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 100) and (pygame.mouse.get_pos()[0] <200)) and ((pygame.mouse.get_pos()[1] > 300) and (pygame.mouse.get_pos()[1] < 400)):
-                x = PINK
-            elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 300) and (pygame.mouse.get_pos()[0] <400)) and ((pygame.mouse.get_pos()[1] > 300) and (pygame.mouse.get_pos()[1] < 400)):
-                x = ORANGE
-            elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 500) and (pygame.mouse.get_pos()[0] <600)) and ((pygame.mouse.get_pos()[1] > 300) and (pygame.mouse.get_pos()[1] < 400)):
-                x = YELLOW
-        
+    return rim
 
-#main loop
-while not done:
-    #start page
+Change_Colour_Red = Button(100,100,100,100, 11, "",RED,"")          
+Change_Colour_Blue = Button(300,100,100,100, 11, "",BLUE,"")        
+Change_Colour_Grey = Button(500,100,100,100, 11, "",GREY,"")        
+Change_Colour_Pink = Button(100,300,100,100, 11, "",PINK,"")        
+Change_Colour_Orange = Button(300,300,100,100, 11, "",ORANGE,"")    
+Change_Colour_Yellow = Button(500,300,100,100, 11, "",YELLOW,"")
+def ChangeColour(x,y):              #(colour being changed, other colour)
     screen.fill(WHITE)
-    pygame.draw.rect(screen, BLACK, [250, 55, 200, 90], 4) 
-    pygame.draw.rect(screen, BLACK, [250, 155, 200, 90], 4)
-    pygame.draw.rect(screen, BLACK, [250, 255, 200, 90], 4)
-    pygame.draw.rect(screen, BLACK, [250, 355, 200, 90], 4)
-    screen.blit(Text_Harpoon_Game, [242,0])
-    screen.blit(Text_Continuous2,[255, 60])
-    screen.blit(Text_Levels2,[255, 160])
-    screen.blit(Text_Level_Builder2,[255, 260])
-    screen.blit(Text_Options2,[255, 360])
-    pygame.display.flip()
-    Pass = False
+    Change_Colour_Red.outline_colour = ChangeColourBoxRim(RED)
+    Change_Colour_Blue.outline_colour = ChangeColourBoxRim(BLUE)
+    Change_Colour_Grey.outline_colour = ChangeColourBoxRim(GREY)
+    Change_Colour_Pink.outline_colour = ChangeColourBoxRim(PINK)
+    Change_Colour_Orange.outline_colour =ChangeColourBoxRim(ORANGE)
+    Change_Colour_Yellow.outline_colour =ChangeColourBoxRim(YELLOW)
+    Change_Colour_Red.draw()
+    Change_Colour_Blue.draw()
+    Change_Colour_Grey.draw()
+    Change_Colour_Pink.draw()
+    Change_Colour_Orange.draw()
+    Change_Colour_Yellow.draw()
+    BACK.draw()
+
+######################################################################      END OF OPTIONS     ###############################################################################################
+
+######################################################################      MAIN LOOP          ###############################################################################################
+StartPage()
+while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT or exit_button == True:
-            done = True 
-    #continuous 
-        elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 250) and (pygame.mouse.get_pos()[0] <450)) and ((pygame.mouse.get_pos()[1] > 55) and (pygame.mouse.get_pos()[1] < 145)):
-            pass
-    #levels
-        elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 250) and (pygame.mouse.get_pos()[0] <450)) and ((pygame.mouse.get_pos()[1] > 155) and (pygame.mouse.get_pos()[1] < 245)):
-            pass
-    #level_builder
-        elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 250) and (pygame.mouse.get_pos()[0] <450)) and ((pygame.mouse.get_pos()[1] > 255) and (pygame.mouse.get_pos()[1] < 345)):
-            screen.fill(WHITE)
-            screen.blit(Text_Level_Builder1, [10,10])
-            screen.blit(Text_Level_Name, [10, 40])
-            pygame.draw.rect(screen, BLACK, [200, 40, 200, 20], 2)
-            screen.blit(Text_Level_Creator, [10, 70])
-            pygame.draw.rect(screen, BLACK, [200, 70, 200, 20], 2)
-            gravity = False
-            if gravity == True:
-                pygame.draw.rect(screen, GREEN, [200, 100, 50, 50])
-                pygame.draw.rect(screen, WHITE, [250, 100, 50, 50])
-                pygame.draw.rect(screen, BLACK, [200, 100, 100, 50], 4)
-            else:
-                pygame.draw.rect(screen, WHITE, [200, 100, 50, 50])
-                pygame.draw.rect(screen, GREY, [250, 100, 50, 50])
-                pygame.draw.rect(screen, BLACK, [200, 100, 100, 50], 4)
-            pygame.display.flip()
-            clock.tick(20)
-            if ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 1) and (pygame.mouse.get_pos()[0] <1)) and ((pygame.mouse.get_pos()[1] > 1) and (pygame.mouse.get_pos()[1] <1 )):
-                pass
-    #options
-        elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 250) and (pygame.mouse.get_pos()[0] <450)) and ((pygame.mouse.get_pos()[1] > 355) and (pygame.mouse.get_pos()[1] < 445)):
-            OptionsPage()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    done = True
-                if ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 100) and (pygame.mouse.get_pos()[0] <200)) and ((pygame.mouse.get_pos()[1] > 100) and (pygame.mouse.get_pos()[1] < 200)):
-                    ChangeColour(KLC, BLC)
-                elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 100) and (pygame.mouse.get_pos()[0] <200)) and ((pygame.mouse.get_pos()[1] > 250) and (pygame.mouse.get_pos()[1] < 350)):
-                    ChangeColour(BLC, KLC)
-                elif ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > 100) and (pygame.mouse.get_pos()[0] <200)) and ((pygame.mouse.get_pos()[1] > 250) and (pygame.mouse.get_pos()[1] < 350)):
-                    if SFX == True:
-                        SFX = False
-                    else:
-                        SFX = True
+            done = True
+        elif page[-1] == "ST":
+            StartPage()
+            SP_Harpoon_game.click()
+            SP_Continuous.click()
+            SP_Levels.click()
+            SP_Level_builder.click()
+            SP_Options.click()
+        elif page[-1] == "BACK":
+            page.pop()
+            page.pop()
+        
+        elif page[1] == "CO":
+            ContinuousPage()
+            
+        elif page[1] == "LV":
+            LevelsPage()
+            
+        elif page[1] == "LB":
+            LevelBuilderStartPage()
+            
+        elif page[1] == "OP":
+            if len(page) == 2:
+                OptionsPage()
+                Killer_Line_Colour.click()
+                Bouncy_Line_Colour.click()
+                SFX_Options_button.click()
+                BACK.click()
+            elif page[-1] == "CCKL":
+                ChangeColour(KLC,BLC)
+                Change_Colour_Red.click()
+                Change_Colour_Blue.click()
+                Change_Colour_Grey.click ()
+                Change_Colour_Pink.click()
+                Change_Colour_Orange.click()
+                Change_Colour_Yellow.click()
+                BACK.click()
+            elif page[-1] == "CCBL":
+                ChangeColour(BLC,KLC)
+                Change_Colour_Red.click()
+                Change_Colour_Blue.click()
+                Change_Colour_Grey.click ()
+                Change_Colour_Pink.click()
+                Change_Colour_Orange.click()
+                Change_Colour_Yellow.click()
+                BACK.click()
+        pygame.display.flip()
+        clock.tick(20)
 pygame.quit()
