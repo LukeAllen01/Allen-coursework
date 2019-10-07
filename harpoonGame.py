@@ -1,4 +1,5 @@
 import pygame
+import random
 pygame.init()
 
 size = (700, 500)
@@ -27,10 +28,10 @@ Text_Levels2 = font2.render("LEVELS", True, BLACK)
 Text_Level_Builder1 = font1.render("LEVEL BUILDER", True, BLACK) 
 Text_Level_Builder2 = font2.render("LEVEL BUILDER", True, BLACK) 
 Text_Options1 = font1.render("OPTIONS", True, BLACK) 
-Text_Options2 = font2.render("OPTIONS", True, BLACK) 
+Text_Options2 = font2.render("OPTIONS", True, BLACK)
 Text_Harpoon_Game = font1.render("HARPOON GAME", True, BLACK) 
 Text_Level_Name = font2.render("Level Name:", True, BLACK) 
-Text_Level_Creator = font2.render("Level Creator:", True, BLACK) 
+Text_Level_Creator = font2.render("Level Creator:", True, BLACK)
 Text_Gravity = font2.render("Gravity:", True, BLACK)
 Text_SFX = font2.render("SFX",True, BLACK)
 
@@ -44,7 +45,7 @@ exit_button = False
 ChangeColourClose = False
 
 class Button:
-    def __init__(self, x, y, width, height, fontsize, word, fill, nextpage):
+    def __init__(self, x, y, width, height, fontsize, word, fill, func):
         font = pygame.font.SysFont('Calibri', fontsize, True, False)
         self.x = x
         self.y = y
@@ -54,16 +55,32 @@ class Button:
         self.fill = fill
         self.outline_colour = BLACK
         self.clicked = False
-        self.nextpage = nextpage
+        self.func = func
         global page
     def draw(self):
         pygame.draw.rect(screen, self.fill, [self.x,self.y,self.width,self.height])
         pygame.draw.rect(screen, self.outline_colour, [self.x, self.y, self.width, self.height], 4)
         screen.blit(self.word, [self.x + 10, self.y + 10])
     def click(self):
-        if ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > self.x) and (pygame.mouse.get_pos()[0] <(self.x + self.width))) and ((pygame.mouse.get_pos()[1] > self.y) and (pygame.mouse.get_pos()[1] < (self.y + self.height)) and self.nextpage != ""):
-            page.append(self.nextpage)
-
+        if ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > self.x) and (pygame.mouse.get_pos()[0] <(self.x + self.width))) and ((pygame.mouse.get_pos()[1] > self.y) and (pygame.mouse.get_pos()[1] < (self.y + self.height)) and (self.func != "") and (self.func[:4] != "FUNC")):
+            page.append(self.func)
+        if ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > self.x) and (pygame.mouse.get_pos()[0] <(self.x + self.width))) and ((pygame.mouse.get_pos()[1] > self.y) and (pygame.mouse.get_pos()[1] < (self.y + self.height)) and (self.func != "") and (self.func[:4] == "FUNC")):
+            global KLC
+            global BLC
+            if self.func == "FUNC-CC-KLC" and self.fill != BLC:
+                KLC = self.fill
+            elif self.func == "FUNC-CC-BLC" and self.fill != KLC:
+                BLC = self.fill
+class wood:
+    def __init__(self, t, coords):
+        global Wooden_Blocks
+        self.t = t
+        self.coords = coords
+        Wooden_Blocks.append(pygame.transform.rotate(pygame.transform.scale(pygame.image.load("wood.jpg"), (100, 100)), random.randrange(0,360)))
+    def draw(self):
+        if start == True:
+            Wooden_Blocks[self.t][1][1] += score
+        screen.blit(Wooden_Blocks[self.t],(self.coords[0],self.coords[1]))
 ###############################################################             GENERAL                 ######################################################################################
 
 page = ["ST"]
@@ -87,11 +104,26 @@ BACK = Button(595,445,100,50,20,"BACK",WHITE,"BACK")
 gravity = False
 ###############################################################             END OF GENERAL          ######################################################################################
 ###############################################################             CONTINUOUS              ######################################################################################
+t = None
+start = False
+speed = 0
+coords = [[None,None], [None,None], [None,None], [None,None]] # coords of the blocks
+harpoon_gun_img = pygame.transform.scale(pygame.image.load("harpoongun.png"), (200,200))
+for i in range(len(coords)):
+    coords[i][0] = random.randrange(0,600)
+    coords[i][1] = i*100
+Wooden_Blocks = []
+wood_objects = [wood(0, coords[0]),wood(1, coords[1]),wood(2, coords[2]), wood(3, coords[3])]
+def update_object_coords():
+    wood.coords = coords
 def ContinuousPage():
     screen.fill(WHITE)
-    
-def ContinuousGame():
-    pass
+    if start == False:
+        screen.blit(harpoon_gun_img, (250,500))
+    update_object_coords()
+    for i in wood_objects:
+        i.draw()
+
 ###############################################################             END OF CONTINUOUS       ######################################################################################
 ###############################################################             LEVELS                  ######################################################################################
 def LevelsPage():
@@ -125,6 +157,8 @@ Bouncy_Line_Colour = Button(100,250,100,100,11,"", BLC, "CCBL") #unfinished
 SFX_Options_button = Button(100,400,100,50,11,"",WHITE,"OPSFX")
 def OptionsPage():
     screen.fill(WHITE)
+    Killer_Line_Colour.fill = KLC
+    Bouncy_Line_Colour.fill = BLC
     Text_Killer_Line_Colour = font2.render("Killer Line Colour", True, BLACK)
     Text_Bouncy_Line_Colour = font2.render("Bouncy Line Colour", True, BLACK)
     screen.blit(Text_Killer_Line_Colour, [250, 125])
@@ -165,6 +199,20 @@ def ChangeColour(x,y):              #(colour being changed, other colour)
     Change_Colour_Pink.outline_colour = ChangeColourBoxRim(PINK)
     Change_Colour_Orange.outline_colour =ChangeColourBoxRim(ORANGE)
     Change_Colour_Yellow.outline_colour =ChangeColourBoxRim(YELLOW)
+    if x == KLC:
+        Change_Colour_Red.func = "FUNC-CC-KLC"
+        Change_Colour_Blue.func = "FUNC-CC-KLC"
+        Change_Colour_Grey.func = "FUNC-CC-KLC"
+        Change_Colour_Pink.func = "FUNC-CC-KLC"
+        Change_Colour_Orange.func = "FUNC-CC-KLC"
+        Change_Colour_Yellow.func = "FUNC-CC-KLC"
+    elif x == BLC:
+        Change_Colour_Red.func = "FUNC-CC-BLC"
+        Change_Colour_Blue.func = "FUNC-CC-BLC"
+        Change_Colour_Grey.func = "FUNC-CC-BLC"
+        Change_Colour_Pink.func = "FUNC-CC-BLC"
+        Change_Colour_Orange.func = "FUNC-CC-BLC"
+        Change_Colour_Yellow.func = "FUNC-CC-BLC"        
     Change_Colour_Red.draw()
     Change_Colour_Blue.draw()
     Change_Colour_Grey.draw()
