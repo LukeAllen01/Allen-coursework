@@ -44,8 +44,9 @@ done = False
 exit_button = False
 ChangeColourClose = False
 
-class Button:
+class Button(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height, fontsize, word, fill, func):
+        pygame.sprite.Sprite.__init__(self)
         font = pygame.font.SysFont('Calibri', fontsize, True, False)
         self.x = x
         self.y = y
@@ -71,16 +72,22 @@ class Button:
                 KLC = self.fill
             elif self.func == "FUNC-CC-BLC" and self.fill != KLC:
                 BLC = self.fill
-class wood:
-    def __init__(self, t, coords):
-        global Wooden_Blocks
+class wood(pygame.sprite.Sprite):
+    def __init__(self, t):
+        pygame.sprite.Sprite.__init__(self)
         self.t = t
-        self.coords = coords
-        Wooden_Blocks.append(pygame.transform.rotate(pygame.transform.scale(pygame.image.load("wood.jpg"), (100, 100)), random.randrange(0,360)))
+        self.x = 0
+        self.y = 0
+        self.img = pygame.transform.rotate(pygame.transform.scale(pygame.image.load("wood.jpg"), (100, 100)), random.randrange(0,360))
     def draw(self):
         if start == True:
-            Wooden_Blocks[self.t][1][1] += score
-        screen.blit(Wooden_Blocks[self.t],(self.coords[0],self.coords[1]))
+            self.y += speed
+        screen.blit(self.img,(self.x,self.y))
+    def updat(self):
+        if top_third == True:
+            self.y += harpoon_speed
+        else:
+            self.y += speed
 ###############################################################             GENERAL                 ######################################################################################
 
 page = ["ST"]
@@ -106,22 +113,23 @@ gravity = False
 ###############################################################             CONTINUOUS              ######################################################################################
 t = None
 start = False
+top_third = False
 speed = 0
-coords = [[None,None], [None,None], [None,None], [None,None]] # coords of the blocks
 harpoon_gun_img = pygame.transform.scale(pygame.image.load("harpoongun.png"), (200,200))
-for i in range(len(coords)):
-    coords[i][0] = random.randrange(0,600)
-    coords[i][1] = i*100
-Wooden_Blocks = []
-wood_objects = [wood(0, coords[0]),wood(1, coords[1]),wood(2, coords[2]), wood(3, coords[3])]
-def update_object_coords():
-    wood.coords = coords
+Wooden_Blocks = pygame.sprite.Group()
+all_sprites_list = pygame.sprite.Group()
+for i in range(4):
+    block = wood(i)
+    block.x = random.randrange(0,600)
+    block.y = i*100
+    Wooden_Blocks.add(block)
+    all_sprites_list.add(block)
+
 def ContinuousPage():
     screen.fill(WHITE)
-    if start == False:
-        screen.blit(harpoon_gun_img, (250,500))
-    update_object_coords()
-    for i in wood_objects:
+    screen.blit(harpoon_gun_img, (250,500))
+    for i in Wooden_Blocks:
+        i.updat()
         i.draw()
 
 ###############################################################             END OF CONTINUOUS       ######################################################################################
