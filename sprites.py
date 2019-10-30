@@ -9,18 +9,22 @@ red = (255,0,0)
 class Block (pygame.sprite.Sprite):
     def __init__(self, width, height):
         pygame.sprite.Sprite.__init__(self)
+        self.width = width
+        self.height = height
         self.OG_image = pygame.Surface([width,height])
+        self.center = self.OG_image.get_rect().center
+        self.rect = self.OG_image.get_rect(center = self.center)
         self.image_angle = random.randrange(0,360)
         self.image = pygame.transform.rotate(self.OG_image, self.image_angle)
-        self.rect = self.image.get_rect()
     def spin(self):
         self.image_angle += 2
         self.image = pygame.transform.rotate(self.OG_image, self.image_angle)
+        self.rect = self.image.get_rect(center = self.center)
     def move(self):
         angle = self.image_angle
-        self.rect.x += math.sin(self.image_angle)*speed
-        self.rect.y += math.cos(self.image_angle)*speed
-        
+        self.rect.x += math.sin(self.image_angle)*speed*-1
+        self.rect.y += math.cos(self.image_angle)*speed*-1
+        self.center = (self.center[0] + math.sin(self.image_angle)*speed*-1, self.center[1] + math.cos(self.image_angle)*speed*-1)
 
 pygame.init()
 
@@ -41,12 +45,13 @@ for i in range(4):
     all_sprites_list.add(block)
 
 player = Block(20, 20)
-player.rect.x = 50
-player.rect.y = 50
-
+player.rect.x = 325
+player.rect.y = 300
+player.center = (325,300)
 player.OG_image = pygame.transform.scale(pygame.image.load("harpoongun.png"), (50,50))
 all_sprites_list.add(player)
 
+all_sprites_list.draw(screen)
 spin = False
 move = False
 done = False
@@ -60,7 +65,7 @@ while done == False:
     if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
         player.spin()
         spin = True
-    elif (spin == True and event.type != pygame.KEYDOWN and event.key == pygame.K_SPACE) or (move == True):
+    elif (spin == True and event.type != pygame.KEYDOWN) or (move == True):
         spin = False
         move = True
         player.move()
@@ -73,6 +78,8 @@ while done == False:
     for block in block_hit_list:
         score += 1
         print(score)
+        if score == 4:
+            done = True
     
     all_sprites_list.draw(screen)
     
