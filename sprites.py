@@ -14,10 +14,10 @@ class Block (pygame.sprite.Sprite):
         self.OG_image = pygame.Surface([width,height])
         self.center = self.OG_image.get_rect().center
         self.rect = self.OG_image.get_rect(center = self.center)
-        self.image_angle = 0#random.randrange(0,360)
+        self.image_angle = random.randrange(0,360)
         self.image = pygame.transform.rotate(self.OG_image, self.image_angle)
     def spin(self):
-        self.image_angle += 10
+        self.image_angle += speed
         self.image = pygame.transform.rotate(self.OG_image, self.image_angle)
         self.rect = self.image.get_rect(center = self.center)
     def move(self):
@@ -32,14 +32,15 @@ speed = 10
 screen_width = 700
 screen_height = 500
 screen = pygame.display.set_mode([screen_width,screen_height])
+font = pygame.font.SysFont('Calibri', 30, True, False)
 
 blocks = pygame.sprite.Group()
 block_list = []
-cblock_hit_list = []
+trail = []
 all_sprites_list = pygame.sprite.Group()
 
 for i in range(4):
-    block = Block(20,15)
+    block = Block(20,20)
     block.rect.x = random.randrange(0,650)
     block.rect.y = (i*200) - 400
     block.OG_image = pygame.transform.scale(pygame.image.load("wood.jpg"), (20, 15))
@@ -59,7 +60,8 @@ all_sprites_list.draw(screen)
 spin = False
 move = False
 done = False
-start = True
+spinable = True
+start = False
 clock = pygame.time.Clock()
 score = 0
 
@@ -67,18 +69,20 @@ while done == False:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and start == True:
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and spinable == True:
         player.spin()
         spin = True
     elif (spin == True and event.type != pygame.KEYDOWN) or (move == True):
         spin = False
         move = True
+        spinable = False
+        start = True
         player.move()
 
+    speed = score//5 + 5
     screen.fill(white)
     
     blocks_hit = pygame.sprite.spritecollide(player,blocks,False)
-        
     if len(blocks_hit) > 0:
         if blocks_hit[-1] == block_list[target]:
             block_list[target].rect.x = random.randrange(0, 650)
@@ -88,16 +92,25 @@ while done == False:
                 target = 3
             score += 1
             print(score)
+            spinable = True
+            move = False
+            player.image_angle = random.randrange(0, 360)
         else:
             done = True
 
-    for sprite in all_sprites_list:
-        sprite.rect.y += 2
-    
+    if start == True:
+        for sprite in all_sprites_list:
+            sprite.rect.y += (speed-4)
+            sprite.center = (sprite.center[0], sprite.center[1] + (speed-4))
+
+    if (player.rect.x > 680 or player.rect.x < 0 or player.rect.y > 480 or player.rect.y < 0):
+        done = True
+        
     all_sprites_list.draw(screen)
+    word = font.render("score:" + str(score), True, black)
+    screen.blit(word, (600, 10))
     
     clock.tick(20)
-    
     pygame.display.flip()
 
 pygame.quit()
