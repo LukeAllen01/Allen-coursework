@@ -23,8 +23,8 @@ class Block (pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.OG_image, self.image_angle)
 
 class Player (Block):
-    def __init__(self, width, height, image):
-        Block.__init__(self, width, height, image)   
+    def __init__(self, image):
+        Block.__init__(self, image)   
     def spin(self):
         self.image_angle += speed                                                                           #this adds the variable speed onto image_angle, speed will increase
         self.image = pygame.transform.rotate(self.OG_image, self.image_angle)                               #this is the image that will end up on the screen, (turned by the image_angle)
@@ -57,7 +57,7 @@ for i in range(4):
     all_sprites_list.add(block)
 
 target = 3
-player = Player(50, 50, "harpoongun.png")
+player = Player("harpoongun.png")
 player.rect.x = 325
 player.rect.y = 300
 player.center = (325,300)
@@ -111,7 +111,7 @@ while done == False:
             sprite.rect.y += (speed-4)
             sprite.center = (sprite.center[0], sprite.center[1] + (speed-4))
 
-    if (player.rect.x > 680 or player.rect.x < 0 or player.rect.y > 480 or player.rect.y < 0):
+    if (player.rect.x > 720 or player.rect.x < -20 or player.rect.y > 520 or player.rect.y < -20):
         done = True
         
     all_sprites_list.draw(screen)
