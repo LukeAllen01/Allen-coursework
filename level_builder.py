@@ -23,7 +23,9 @@ class Block (pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.width = width
         self.height = height
-        self.OG_image = pygame.transform.scale(pygame.image.load(image), (self.width,self.height))
+        print(image)
+        self.h = pygame.image.load(image)
+        self.OG_image = pygame.transform.scale(self.h, (self.width,self.height))
         self.center = self.OG_image.get_rect().center
         self.rect = self.OG_image.get_rect(center = self.center)
         self.image_angle = random.randrange(0,360)
@@ -32,12 +34,12 @@ class Block (pygame.sprite.Sprite):
 
 
 ############### DO NOT COPY BEFORE THIS POINT
-RED_IMAGE = pygame.transform.scale(pygame.image.load("red.png"), (50,50))
-BLUE_IMAGE = pygame.transform.scale(pygame.image.load("blue.png"), (50,50))
-YELLOW_IMAGE = pygame.transform.scale(pygame.image.load("yellow.png"), (50,50))
-GREY_IMAGE = pygame.transform.scale(pygame.image.load("grey.png"), (50,50))
-PINK_IMAGE = pygame.transform.scale(pygame.image.load("pink.png"), (50,50))
-ORANGE_IMAGE = pygame.transform.scale(pygame.image.load("orange.png"), (50,50))
+RED_IMAGE = "red.png"
+BLUE_IMAGE = "blue.png"
+YELLOW_IMAGE = "yellow.png"
+GREY_IMAGE = "grey.png"
+PINK_IMAGE = "pink.png"
+ORANGE_IMAGE = "orange.png"
 klc_image = RED_IMAGE
 blc_image = BLUE_IMAGE
 
@@ -50,9 +52,10 @@ FinalBlockKey = pygame.K_f
 
 class Create(Block):
     def __init__(self, image):
-        super().__init__(self, image)
+        super().__init__(image)
         self.image_angle = 0
-        self.OG_image = image
+        self.rect.x = 0
+        self.rect.y = 0
         
 while not done:
     for event in pygame.event.get():
