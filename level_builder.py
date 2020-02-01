@@ -121,8 +121,8 @@ while not done:
             all_sprites_list.add(final)
     screen.fill(WHITE)        
     for i in all_sprites_list:
-        i.selecter()
         i.drag()
+        i.selecter()
     all_sprites_list.draw(screen)
     clock.tick(20)
 
