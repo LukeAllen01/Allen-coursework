@@ -15,7 +15,6 @@ klc = RED
 blc = BLUE
 
 
-
 screen.fill(WHITE)
 all_sprites_list = pygame.sprite.Group()
 
@@ -63,8 +62,7 @@ class Create(Block):
         self.drag_og_x = 0
         self.drag_og_y = 0
     def selecter(self):
-        if (event.type == pygame.MOUSEBUTTONDOWN):
-            print(1)
+        if (event.type == pygame.MOUSEBUTTONDOWN):            
             for i in all_sprites_list:
                 i.select = False
             if (pygame.mouse.get_pos()[0] > self.rect.x) and (pygame.mouse.get_pos()[0] <(self.rect.x + self.width)) and ((pygame.mouse.get_pos()[1] > self.rect.y) and (pygame.mouse.get_pos()[1] < (self.rect.y + self.height))):
@@ -121,6 +119,7 @@ while not done:
         elif event.type == pygame.KEYDOWN and event.key == FinalBlockKey:
             final = Create("wood.jpg")
             all_sprites_list.add(final)
+    screen.fill(WHITE)        
     for i in all_sprites_list:
         i.selecter()
         i.drag()
