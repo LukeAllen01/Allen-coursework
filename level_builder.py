@@ -66,9 +66,9 @@ class Create(Block):
     def selecter(self):
         pos = pygame.mouse.get_pos()
         if (event.type == pygame.MOUSEBUTTONDOWN):            
-            for i in all_sprites_list:
-                i.select = False
             if (pos[0] > self.rect.x) and (pos[0] <(self.rect.x + self.width)) and ((pos[1] > self.rect.y) and (pos[1] < (self.rect.y + self.height))):
+                for i in all_sprites_list:
+                    i.select = False                
                 self.select = True
         if self.select == True:
             pygame.draw.rect(screen, BLACK, [self.rect.x - 5, self.rect.y - 5, self.width + 10, self.height + 10], 2)
