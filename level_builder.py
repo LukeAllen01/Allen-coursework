@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 pygame.init()
 
 size = (700 , 500)
@@ -61,11 +62,13 @@ class Create(Block):
         self.og_y = 0
         self.drag_og_x = 0
         self.drag_og_y = 0
+        self.henry = image
     def selecter(self):
+        pos = pygame.mouse.get_pos()
         if (event.type == pygame.MOUSEBUTTONDOWN):            
             for i in all_sprites_list:
                 i.select = False
-            if (pygame.mouse.get_pos()[0] > self.rect.x) and (pygame.mouse.get_pos()[0] <(self.rect.x + self.width)) and ((pygame.mouse.get_pos()[1] > self.rect.y) and (pygame.mouse.get_pos()[1] < (self.rect.y + self.height))):
+            if (pos[0] > self.rect.x) and (pos[0] <(self.rect.x + self.width)) and ((pos[1] > self.rect.y) and (pos[1] < (self.rect.y + self.height))):
                 self.select = True
         if self.select == True:
             pygame.draw.rect(screen, BLACK, [self.rect.x - 5, self.rect.y - 5, self.width + 10, self.height + 10], 2)
@@ -90,19 +93,39 @@ class Create(Block):
             pygame.draw.circle(screen, BLACK, (int(self.rect.x + 0.5*self.width + 3), self.rect.y + self.height + 5), 5, 1)
             pygame.draw.circle(screen, BLACK, (self.rect.x + self.width + 5, int(self.rect.y + 0.5*self.height + 3)), 5, 1)
     def drag(self):
-        if event.type == pygame.MOUSEBUTTONDOWN and self.select == True and self.dragstart == False and (pygame.mouse.get_pos()[0] > self.rect.x) and (pygame.mouse.get_pos()[0] <(self.rect.x + self.width)) and ((pygame.mouse.get_pos()[1] > self.rect.y) and (pygame.mouse.get_pos()[1] < (self.rect.y + self.height))):
+        if self.henry == blc_image:
+            print(self.select)
+            print(self.dragstart)
+            print ("    ")
+        pos = pygame.mouse.get_pos()
+        if event.type == pygame.MOUSEBUTTONDOWN and self.select == True and self.dragstart == False and (pos[0] > self.rect.x + 5) and (pos[0] <(self.rect.x + self.width - 5)) and ((pos[1] > self.rect.y + 5) and (pos[1] < (self.rect.y + self.height - 5))):
             self.dragstart = True
-            self.drag_og_x = pygame.mouse.get_pos()[0]
-            self.drag_og_y = pygame.mouse.get_pos()[1]
+            self.drag_og_x = pos[0]
+            self.drag_og_y = pos[1]
             self.og_x = self.rect.x
             self.og_y = self.rect.y
         if self.dragstart == True:
-            self.rect.x = self.og_x + (pygame.mouse.get_pos()[0] - self.drag_og_x)
-            self.rect.y = self.og_y + (pygame.mouse.get_pos()[1] - self.drag_og_y)
+            self.rect.x = self.og_x + (pos[0] - self.drag_og_x)
+            self.rect.y = self.og_y + (pos[1] - self.drag_og_y)
         if event.type == pygame.MOUSEBUTTONUP:
-            self.dragstart == False
-            
+            self.dragstart = False
+    def size(self):
+        pos = pygame.mouse.get_pos()
+        top_left_pos = (self.rect.x - 5, self.rect.y - 5)
+        top_right_pos = (self.rect.x + self.width + 5, self.rect.y - 5)
+        bottom_left_pos = (self.rect.x - 5, self.rect.y + self.height + 5)
+        bottom_right_pos = (self.rect.x + self.width + 5, self.rect.y + self.height + 5)
         
+        if event.type == pygame.MOUSEBUTTONDOWN and self.select == True:
+            if math.sqrt((top_left_pos[0] - pos[0])^2 + (top_left_pos[1] - pos[1])^2) < 5:
+                pass
+            elif math.sqrt((top_right_pos[0] - pos[0])^2 + (top_right_pos[1] - pos[1])^2) < 5:
+                pass
+            elif math.sqrt((bottom_right_pos[0] - pos[0])^2 + (bottom_right_pos[1] - pos[1])^2) < 5:
+                self.width = pos[0] - top_left_pos[0]
+            elif math.sqrt((bottom_left_pos[0] - pos[0])^2 + (bottom_left_pos[1] - pos[1])^2) < 5:
+                pass
+            
 while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -124,6 +147,9 @@ while not done:
         i.drag()
         i.selecter()
     all_sprites_list.draw(screen)
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
+        print(pygame.mouse.get_pos())
+        print(killer.rect)
     clock.tick(20)
 
     
