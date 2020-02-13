@@ -62,22 +62,23 @@ class Button():
         pygame.draw.rect(screen, self.outline_colour, [self.x, self.y, self.width, self.height], 4)
         screen.blit(self.word, [self.x + 10, self.y + 10])
     def click(self):
+        global KLC
+        global BLC
+        global SFX
         if ((event.type == pygame.MOUSEBUTTONDOWN) and (pygame.mouse.get_pos()[0] > self.x) and (pygame.mouse.get_pos()[0] <(self.x + self.width))) and ((pygame.mouse.get_pos()[1] > self.y) and (pygame.mouse.get_pos()[1] < (self.y + self.height)) and (self.func != "")):
-            if (self.func[:4] != "FUNC"):
-                page.append(self.func)
-            elif (self.func[:4] == "FUNC"):
-                global KLC
-                global BLC
-                global SFX
-                if self.func == "FUNC-CC-KLC" and self.fill != BLC:
-                    KLC = self.fill
-                elif self.func == "FUNC-CC-BLC" and self.fill != KLC:
-                    BLC = self.fill
-                elif self.func == "OPSFX":
-                    if SFX == True:
-                        SFX = False
-                    else:
-                        SFX = True
+            if (self.func[:3] == "ADD"): #adding a page onto stack
+                page.append(self.func[4:6])
+            elif self.func == "klc" and self.fill != BLC: #changing the klc when different colour clicked
+                KLC = self.fill
+            elif self.func == "blc" and self.fill != KLC: #changing the blc when different colour clicked
+                BLC = self.fill
+            elif self.func == "sfx":
+                if SFX == True:
+                    SFX = False
+                else:
+                    SFX = True
+            elif self.func == "BACK":
+                page.pop()
 
 
 ###############################################################             GENERAL                 ######################################################################################
@@ -86,10 +87,10 @@ page = ["ST"]
 ALL_BUTTONS = []
 
 SP_Harpoon_game = Button(232,-10,0,0,35,"Harpoon Game",WHITE, "")
-SP_Continuous = Button( 250, 55, 200, 90,22, "Continuous", WHITE, "CO")
-SP_Levels = Button(250,155,200,90,22,"Levels",WHITE, "LV")
-SP_Level_builder = Button(250,255,200,90,22, "Level Builder", WHITE,"LB")
-SP_Options = Button(250,355,200,90,22, "Options", WHITE, "OP")
+SP_Continuous = Button( 250, 55, 200, 90,22, "Continuous", WHITE, "ADD_CO")
+SP_Levels = Button(250,155,200,90,22,"Levels",WHITE, "ADD_LV")
+SP_Level_builder = Button(250,255,200,90,22, "Level Builder", WHITE,"ADD_LB")
+SP_Options = Button(250,355,200,90,22, "Options", WHITE, "ADD_OP")
 SP_Buttons = [SP_Harpoon_game,SP_Continuous,SP_Levels,SP_Level_builder,SP_Options]
 def StartPage():
     screen.fill(WHITE)
@@ -102,7 +103,13 @@ BACK = Button(595,445,100,50,20,"BACK",WHITE,"BACK")
 gravity = False
 ###############################################################             END OF GENERAL          ######################################################################################
 ###############################################################             CONTINUOUS              ######################################################################################
+PNP_button = Button(400,230, 200, 40, 12, "", WHITE, "")
+Player_name_words = font2.render("Player name:", True, BLACK)
 
+def PlayerNamePage():
+    screen.fill(WHITE)
+    screen.blit(Player_name_words, [300, 240])
+    PNP_button.draw()
 
 ###############################################################             END OF CONTINUOUS       ######################################################################################
 ###############################################################             LEVELS                  ######################################################################################
@@ -133,9 +140,9 @@ def LevelBuilderStartPage():
     
 ###############################################################             END OF LEVEL BUILDER    ######################################################################################
 ###############################################################             OPTIONS                 ######################################################################################
-Killer_Line_Colour = Button(100,100,100,100,11,"", KLC, "CCKL")
-Bouncy_Line_Colour = Button(100,250,100,100,11,"", BLC, "CCBL") #unfinished
-SFX_Options_button = Button(100,400,100,50,11,"",WHITE,"OPSFX")
+Killer_Line_Colour = Button(100,100,100,100,11,"", KLC, "ADD_KL")
+Bouncy_Line_Colour = Button(100,250,100,100,11,"", BLC, "ADD_BL") #unfinished
+SFX_Options_button = Button(100,400,100,50,11,"",WHITE,"sfx")
 OP_Buttons = [Killer_Line_Colour, Bouncy_Line_Colour, SFX_Options_button]
 def OptionsPage():
     screen.fill(WHITE)
@@ -179,10 +186,10 @@ def ChangeColour(x,y):              #(colour being changed, other colour)
         i.outline_colour = ChangeColourBoxRim(i.fill)
     if x == KLC:
         for i in Colour_Buttons:
-            i.func = "FUNC-CC-KLC"
+            i.func = "klc"
     elif x == BLC:
         for i in Colour_Buttons:
-            i.func = "FUNC-CC-BLC"       
+            i.func = "blc"       
     for i in Colour_Buttons:
         i.draw()
     BACK.draw()
@@ -199,13 +206,9 @@ while not done:
     if page[-1] == "ST":
         StartPage()
         for i in SP_Buttons:
-            i.click()
-    elif page[-1] == "BACK":
-        page.pop()
-        page.pop()
-        
+            i.click()        
     elif page[1] == "CO":
-        ContinuousPage()
+        PlayerNamePage()
         BACK.click()
     elif page[1] == "LV":
         LevelsPage()
@@ -220,16 +223,18 @@ while not done:
             for i in OP_Buttons:
                 i.click()
             BACK.click()
-        elif page[-1] == "CCKL":
+        elif page[-1] == "KL":
             ChangeColour(KLC,BLC)
             for i in Colour_Buttons:
                 i.click()
             BACK.click()
-        elif page[-1] == "CCBL":
+        elif page[-1] == "BL":
             ChangeColour(BLC,KLC)
             for i in Colour_Buttons:
                 i.click()
             BACK.click()
+    for i in page:
+        print(i)
     pygame.display.flip()
     clock.tick(20)
 pygame.quit()
