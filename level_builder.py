@@ -130,6 +130,9 @@ class Create(Block):
         self.og_y = 0
         self.drag_og_x = 0
         self.drag_og_y = 0
+        self.bottom_right = False
+    def draw(self):
+        pass
     def selecter(self):
         pos = pygame.mouse.get_pos()
         if (event.type == pygame.MOUSEBUTTONDOWN):            
@@ -182,15 +185,18 @@ class Create(Block):
         
         if pressed[0] == 1 and self.select == True:
             print("te")
-            if math.sqrt((top_left_pos[0] - pos[0])**2 + (top_left_pos[1] - pos[1])**2) < 5:
-                pass
-            elif math.sqrt((top_right_pos[0] - pos[0])**2 + (top_right_pos[1] - pos[1])**2) < 5:
-                pass
-            elif math.sqrt((bottom_right_pos[0] - pos[0])**2 + (bottom_right_pos[1] - pos[1])**2) < 5:           #bottom-right corner
+            #if math.sqrt((top_left_pos[0] - pos[0])**2 + (top_left_pos[1] - pos[1])**2) < 5:
+            #    pass
+            #elif math.sqrt((top_right_pos[0] - pos[0])**2 + (top_right_pos[1] - pos[1])**2) < 5:
+            #    pass
+            if math.sqrt((bottom_right_pos[0] - pos[0])**2 + (bottom_right_pos[1] - pos[1])**2) < 5 or self.bottom_right == True:           #bottom-right corner
                 self.width = pos[0] - self.rect.x
                 self.height = pos[1] - self.rect.y
-            elif math.sqrt((bottom_left_pos[0] - pos[0])**2 + (bottom_left_pos[1] - pos[1])**2) < 5:
-                pass
+                self.bottom_right = True
+            #elif math.sqrt((bottom_left_pos[0] - pos[0])**2 + (bottom_left_pos[1] - pos[1])**2) < 5:
+            #    pass
+        else:
+            self.bottom_right = False
             
 while not done:
     for event in pygame.event.get():
