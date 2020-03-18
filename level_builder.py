@@ -196,7 +196,7 @@ class Create(Block):
 
     def rotate(self):
         pos = pygame.mouse.get_pos()
-        if (event.type == pygame.MOUSEBUTTONDOWN) and pos[0] > self.bar_position[0] and pos[0] < (self.bar_position[0] + 15) and pos[1] > self.bar_position[1] and pos[1] <( self.bar_position[1] + 45) or self.bar_drag ==True:
+        if (event.type == pygame.MOUSEBUTTONDOWN) and self.select == True and pos[0] > self.bar_position[0] and pos[0] < (self.bar_position[0] + 15) and pos[1] > self.bar_position[1] and pos[1] <( self.bar_position[1] + 45) or self.bar_drag ==True:
             self.bar_position[0] = pos[0]
             if self.bar_position [0] > 670:
                 self.bar_position[0] = 670
@@ -214,7 +214,8 @@ class Create(Block):
             pygame.draw.rect(screen,WHITE, (self.bar_position[0],self.bar_position[1], 15, 45))
             pygame.draw.rect(screen,BLACK, (self.bar_position[0],self.bar_position[1], 15, 45), 3)
         
-        self.image_angle = ((self.bar_position[0] - 170)/500)*360    
+            self.image_angle = ((self.bar_position[0] - 170)/500)*360
+        
     def drag(self):
         pos = pygame.mouse.get_pos()
         if event.type == pygame.MOUSEBUTTONDOWN and self.select == True and self.dragstart == False and (pos[0] > self.rect.x + 5) and (pos[0] <(self.rect.x + self.width - 5)) and ((pos[1] > self.rect.y + 5) and (pos[1] < (self.rect.y + self.height - 5))):
