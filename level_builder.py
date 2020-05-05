@@ -34,6 +34,24 @@ class Block (pygame.sprite.Sprite):
         self.image_angle = random.randrange(0,360)
         self.image = pygame.transform.rotate(self.OG_image, self.image_angle)
 
+class Player (Block):
+    def __init__(self, image):
+        Block.__init__(self, image)   
+    def spin(self):
+        self.image_angle += speed
+        #this adds the variable speed onto image_angle, speed will increase
+        self.image = pygame.transform.rotate(self.OG_image, self.image_angle)
+        #this is the image that will end up on the screen, (turned by the image_angle)
+        self.rect = self.image.get_rect(center = self.center)
+        #this is what makes the image look like it is turning via its center
+    def move(self):
+        rad = math.radians(self.image_angle)                                                                #radian version of angle as that is version needed for library math.
+        self.rect.x += math.sin(rad)*speed*-1                                                               #
+        self.rect.y += math.cos(rad)*speed*-1                                                               #moving the object in direction it is pointing
+        self.center = (self.center[0] + math.sin(rad)*speed*-1, self.center[1] + math.cos(rad)*speed*-1)    # changing the position of the center, so that it is in motion with the harpoon
+
+
+
 class Button():
     def __init__(self, x, y, width, height, fontsize, word, fill, func):
         self.x = x
@@ -43,10 +61,8 @@ class Button():
         self.word = word
         self.fill = fill
         self.outline_colour = BLACK
-        self.clicked = False
         self.func = func
         self.fontsize = fontsize
-        self.wait = 0
         global page
     def draw(self):
         font = pygame.font.SysFont('Calibri', self.fontsize, True, False)
@@ -91,6 +107,7 @@ class image_button(Button):
     def click(self):
         press = pygame.mouse.get_pressed()
         R = ""
+
         if ((press[0] == 1) and (pygame.mouse.get_pos()[0] > self.x) and (pygame.mouse.get_pos()[0] <(self.x + self.width))) and ((pygame.mouse.get_pos()[1] > self.y) and (pygame.mouse.get_pos()[1] < (self.y + self.height)) and (self.func != "")):
             if self.func == "home":
                 page.clear()
@@ -132,22 +149,6 @@ class image_button(Button):
             self.clickedon = False
                 
 SETTINGS = image_button(645, 5, 50, 50, 12, "", WHITE, "options", "settings.png")
-
-class Player (Block):
-    def __init__(self, image):
-        Block.__init__(self, image)   
-    def spin(self):
-        self.image_angle += speed
-        #this adds the variable speed onto image_angle, speed will increase
-        self.image = pygame.transform.rotate(self.OG_image, self.image_angle)
-        #this is the image that will end up on the screen, (turned by the image_angle)
-        self.rect = self.image.get_rect(center = self.center)
-        #this is what makes the image look like it is turning via its center
-    def move(self):
-        rad = math.radians(self.image_angle)                                                                #radian version of angle as that is version needed for library math.
-        self.rect.x += math.sin(rad)*speed*-1                                                               #
-        self.rect.y += math.cos(rad)*speed*-1                                                               #moving the object in direction it is pointing
-        self.center = (self.center[0] + math.sin(rad)*speed*-1, self.center[1] + math.cos(rad)*speed*-1)    # changing the position of the center, so that it is in motion with the harpoon
 
 
 
@@ -335,7 +336,6 @@ def load():
         all_sprites_list.add(Final_block)
         all_final_blocks_list.add(Final_block)
 
-mode = "build"
 
 QUIT = image_button(10, 5, 50, 50, 12, "", WHITE, "home", "quit.png")
 #this is the button on which takes player back to home page
@@ -465,7 +465,7 @@ class Create(Block):
                 self.bottom_right = True #tells us that the bottom right corner is being held down to increase size of object
         else:
             self.bottom_right = False  #tells us that the bottom right corner is not being held down to increase size of object
-        self.center = [0.5*self.width + self.rect.x,0.5*self.height + self.rect.y]
+        #self.center = [0.5*self.width + self.rect.x,0.5*self.height + self.rect.y]
     def shrink(self):
         global zoom
         zoom = zoom - 0.01
