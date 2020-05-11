@@ -301,7 +301,7 @@ class TextBox(Button):
                     self.word = self.word[:(len(self.word)-1)]
                 elif event.key == pygame.K_SPACE:
                     self.word = self.word + " "  #when it is a space space is added to the word
-                elif event.key != pygame.K_RETURN:
+                elif event.key >96 and event.key < 123:
                     self.word = self.word + keys[event.key - 97] #letter a is equivelant to value 97 when pressed
                 self.wait = 3  #if a single key is pressed it might add it on more than once if the key is pressed for longer than a twentieth of a second
         elif self.wait > 0:
@@ -704,6 +704,8 @@ BouncyBlockKey = pygame.K_b
 CheckpointBlockKey = pygame.K_c
 FinalBlockKey = pygame.K_f
 #original key bindings for creating the blocks
+play_mode = False
+PLAY = Button(5,445,100,50,20,"PLAY",WHITE,"ADD_LBPLST")
 
 def rotation_bar():
     global bar_position
@@ -737,8 +739,16 @@ def screen_drag():
             i.rect.x = i.og_x + (pos[0] - screen_drag_start_x)
             i.rect.y = i.og_y + (pos[1] - screen_drag_start_y)
 
-#def transform():w
+def transform(player):
+    x = Player("harpoongun.png")
+    x.rect.x = player.rect.x
+    x.rect.y = player.rect.y
+    x.image_angle = player.image_angle
+    x.center = x.OG_image.get_rect().center  
+    x.rect = x.OG_image.get_rect(center = x.center)
+    return x
     
+
 ###############################################################             END OF LEVEL BUILDER    ######################################################################################
 ###############################################################             OPTIONS                 ######################################################################################
 Killer_Line_Colour = Button(100,100,100,100,11,"", KLC, "ADD_OPKL")
@@ -899,61 +909,47 @@ while not done: #once done is true, the window will close
                 screen.fill(background_colour)
                 if start == False:
                     screen.blit(Text_To_Start, (30,400)) #puts press space to start onto the screen if the game has not started yet
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and spinable == True: 
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and spinable == True: #this detects whether a key is pressed, if that key is SPACE bar and whether player is allowed to spin
                     player.spin()
                     spin = True
                     start = True
-                #this detects whether a key is pressed, if that key is SPACE bar and whether player is allowed to spin
-                elif (spin == True and event.type != pygame.KEYDOWN) or (move == True):
+                
+                elif (spin == True and event.type != pygame.KEYDOWN) or (move == True): #this detects if no key is pressed and spin = True, or it was moving last loop
                     spin = False
                     move = True
                     spinable = False
                     player.move()
-                #this detects if no key is pressed and spin = True, or it was moving last loop
-                speed = score//5 + 5
-                #increases speed
                 
-                blocks_hit = pygame.sprite.spritecollide(player,blocks,False)
-                #adds any blocks that have been hit by the player to blocks_hit
-                if len(blocks_hit) > 0:
-                    #checks if anything has been hit
-                    if blocks_hit[-1] == block_list[target]:
-                        #checks if the last block entered was the targeted block
+                speed = score//5 + 5 #increases speed
+                
+                blocks_hit = pygame.sprite.spritecollide(player,blocks,False) #adds any blocks that have been hit by the player to blocks_hit
+                if len(blocks_hit) > 0: #checks if anything has been hit
+                    if blocks_hit[-1] == block_list[target]: #checks if the last block entered was the targeted block
                         block_list[target].rect.x = random.randrange(0, 650)
-                        block_list[target].rect.y -= 800
-                        #puts the block higher that it looks like a constant stream of blocks
+                        block_list[target].rect.y -= 800 #puts the block higher so that it looks like a constant stream of blocks
                         target -= 1
                         if target == -1:
-                            target = 3
-                        #changes target to next one
-                        score += 1
-                        #add 1 to score
+                            target = 3 #changes target to next one
+                        score += 1 #add 1 to score
                         print(score)
-                        spinable = True
-                        #allow player to spin again
-                        move = False
-                        #stops player from moving
+                        spinable = True #allow player to spin again
+                        move = False #stops player from moving
                         if (score/5) == (score//5):
                             background_colour_pointer = background_colour_pointer + 1
                     else:
-                        death = True
-                    # for moment this stops game if wrong block hit
+                        death = True # for moment this stops game if wrong block hit
                 if start == True:
                     for sprite in all_sprites_list:
                         sprite.rect.y += (speed-4)
-                        sprite.center = (sprite.center[0], sprite.center[1] + (speed-4))
-                #makes all srites move down screen by speed
+                        sprite.center = (sprite.center[0], sprite.center[1] + (speed-4)) #makes all sprites move down screen by speed
                 if (player.rect.x > 720 or player.rect.x < -20 or player.rect.y > 520 or player.rect.y < -20):
-                    death = True
-                    #if player hits side of screen they dead
+                    death = True #if player hits side of screen they dead
                 for i in blocks:
                     if i.rect.y > 520:
                         i.rect.y = i.rect.y - 800
                         i.rect.x = random.randrange(0,650)
-                all_sprites_list.draw(screen) 
-                #shows all sprites
-                score_word = font.render("score:" + str(score), True, BLACK)
-                #writes score on top right corner
+                all_sprites_list.draw(screen)  #shows all sprites
+                score_word = font.render("score:" + str(score), True, BLACK) #writes score on top right corner
                 if death != True: #writes score at top left of screen if game is playing
                     screen.blit(score_word, (600, 10))
                 elif death == True: # if death is true writes score and best score on the centre of the screen
@@ -989,6 +985,8 @@ while not done: #once done is true, the window will close
             all_bouncy_blocks_list = pygame.sprite.Group()
             all_checkpoint_blocks_list = pygame.sprite.Group()
             all_final_blocks_list = pygame.sprite.Group()
+            player = Create("harpoongun.png")
+            all_sprites_list.add(player)
             page.pop()
             page.append("LBLC")
             task = False
@@ -1024,8 +1022,10 @@ while not done: #once done is true, the window will close
             SAVE.draw()
             QUIT.draw()#buttons are drawn
             BACK.draw()
+            PLAY.draw()
             SAVE.click()
             QUIT.click()
+            PLAY.click()
             SETTINGS.click()
             for i in all_sprites_list:
                 i.drag()
@@ -1035,7 +1035,34 @@ while not done: #once done is true, the window will close
                 i.selecter()          #all objects are checked to be draged, re-sized, rotated, or selected, and image updates
             screen_drag()
             all_sprites_list.draw(screen)
-        BACK.click()
+            BACK.click()
+        elif page[-1] == "LBPLST":
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            #setting all the constants to their origonal settings
+            spin = False  #tells us whether it has started spinning or not
+            move = False  #tells us whether it has started moving or not
+            spinable = True  #tells us if harpoon is allowed to start spinning (if it has hit correct previous block)
+            start = False  #tells us if game has started so that when it does we can make the screen scroll down
+            death = False  #know if player died so we can put up deathscreen when he/she has died
+            speed = 10
+            player = transform(player)
+            page.pop()
+            page.append("LBPL")
+        elif page[-1] == "LBPL":
+            if start == False:
+                screen.blit(Text_To_Start, (30,400)) #puts press space to start onto the screen if the game has not started yet
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and spinable == True: #this detects whether a key is pressed, if that key is SPACE bar and whether player is allowed to spin
+                player.spin()
+                spin = True
+                start = True
+            
+            elif (spin == True and event.type != pygame.KEYDOWN) or (move == True): #this detects if no key is pressed and spin = True, or it was moving last loop
+                spin = False
+                move = True
+                spinable = False
+                player.move()
+            print(player.image_angle)
+            all_sprites_list.draw(screen)
     pygame.display.flip() #shows the virtual screen
     clock.tick(20)  #this is refresh rate per second
 pygame.quit()
